@@ -80,7 +80,6 @@ module.exports = (io) => {
 				//exit waiting room channel
 				socket.leave(waitingRoom);
 				//update game list for waiting room
-				io.to(waitingRoom).emit("updateGameList", game);
 				//tell the game room someone joined.
 				io.to(gameId).emit("updateCurrentGame", game);
 				//tell socket to join the game channel
@@ -93,8 +92,10 @@ module.exports = (io) => {
 					setTimeout(() => {
 						game.state = 2;
 						io.to(gameId).emit("updateCurrentGame", game);
+						io.to(waitingRoom).emit("updateGameList", game);
 					}, 5000);
 				}
+				io.to(waitingRoom).emit("updateGameList", game);
 			}
 		});
 
@@ -122,6 +123,7 @@ module.exports = (io) => {
 				let winnerIndex = game.scores.indexOf(Math.max(...game.scores));
 				game.winner = game.players[winnerIndex];
 				io.to(gameId).emit("updateCurrentGame", game);
+				io.to(waitingRoom).emit("updateGameList", game);
 			}
 		});
 

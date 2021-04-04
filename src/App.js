@@ -97,16 +97,34 @@ function App() {
 					<button onClick={() => mySocket.emit("createGame", userId)}>
 						Create Game
 					</button>
-					{Object.keys(gameList).map((gameId, i) => (
-						<div key={gameId}>
-							<h4
-								onClick={() =>
-									mySocket.emit("joinGame", gameId)
-								}
-							>{`Game #${i + 1} ${gameId}`}</h4>
-							<p>Players {gameList[gameId].players.length}</p>
-						</div>
-					))}
+					{Object.keys(gameList).map((gameId, i) => {
+						let game = gameList[gameId];
+						let gameOver = game.state === 3;
+						let gameInProgress = game.state === 2;
+						let gameIsStarting = game.state === 1;
+						let canJoin = game.state === 0;
+
+						return (
+							<div key={gameId}>
+								<h4>{`Game #${i + 1} ${gameId}`}</h4>
+								<p>Players {gameList[gameId].players.length}</p>
+								{canJoin && (
+									<button
+										onClick={() =>
+											mySocket.emit("joinGame", gameId)
+										}
+									>
+										JOIN
+									</button>
+								)}
+								{gameIsStarting && <p>Game Is Starting...</p>}
+								{gameInProgress && <p>Game In Progress...</p>}
+								{gameOver && (
+									<p>{`Game Is Over.  ${game.winner} won...`}</p>
+								)}
+							</div>
+						);
+					})}
 				</div>
 			)}
 
