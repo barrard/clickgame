@@ -28,6 +28,8 @@ const io = require("socket.io")(server, {
 		origin: [
 			"http://192.168.0.215:3000",
 			"http://localhost:3000",
+			"http://192.168.0.215:80080",
+			"http://localhost:8080",
 			"https://clickgame.raveaboutdave.com",
 		],
 		methods: ["GET", "POST"],

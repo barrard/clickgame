@@ -4,7 +4,7 @@ import Confetti from "react-confetti";
 
 import "./App.css";
 import socketIOClient from "socket.io-client";
-const ENDPOINT = "http://127.0.0.1:8080";
+const ENDPOINT = window.location.origin;
 
 //pull somehing from codepen
 //i want a confetti wining animation
