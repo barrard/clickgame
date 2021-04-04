@@ -109,13 +109,19 @@ function App() {
 								<h4>{`Game #${i + 1} ${gameId}`}</h4>
 								<p>Players {gameList[gameId].players.length}</p>
 								{canJoin && (
-									<button
-										onClick={() =>
-											mySocket.emit("joinGame", gameId)
-										}
-									>
-										JOIN
-									</button>
+									<>
+										<p>Waiting for more players...</p>
+										<button
+											onClick={() =>
+												mySocket.emit(
+													"joinGame",
+													gameId
+												)
+											}
+										>
+											JOIN
+										</button>
+									</>
 								)}
 								{gameIsStarting && <p>Game Is Starting...</p>}
 								{gameInProgress && <p>Game In Progress...</p>}
