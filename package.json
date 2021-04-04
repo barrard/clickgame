@@ -1,0 +1,68 @@
+{
+	"name": "trdn-bot-js",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"start": "react-scripts start",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject",
+		"startNode": "node ./bin/www",
+		"watch": "nodemon ./bin/www"
+	},
+	"dependencies": {
+		"@fortawesome/free-solid-svg-icons": "^5.13.1",
+		"@fortawesome/react-fontawesome": "^0.1.11",
+		"@testing-library/jest-dom": "^5.11.4",
+		"@testing-library/react": "^11.1.0",
+		"@testing-library/user-event": "^12.1.10",
+		"cookie-parser": "~1.4.4",
+		"cors": "^2.8.5",
+		"d3": "^6.5.0",
+		"debug": "~2.6.9",
+		"express": "~4.16.1",
+		"http-errors": "~1.6.3",
+		"morgan": "~1.9.1",
+		"react": "^17.0.1",
+		"react-confetti": "^6.0.1",
+		"react-dom": "^17.0.1",
+		"react-rewards": "^1.1.2",
+		"react-scripts": "4.0.2",
+		"request-promise": "^4.2.6",
+		"socket.io": "^4.0.1",
+		"socket.io-client": "^4.0.1",
+		"styled-components": "^5.2.1",
+		"uuid": "^8.3.2",
+		"web-vitals": "^1.0.1"
+	},
+	"eslintConfig": {
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		]
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	},
+	"proxy": "http://localhost:8080",
+	"nodemonConfig": {
+		"watch": [
+			"app.js",
+			"bin/www",
+			"service/*",
+			"routes/*"
+		],
+		"ignore": [
+			"src/*"
+		]
+	}
+}
