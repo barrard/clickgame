@@ -10,3 +10,11 @@ module.exports = {
 		}
 	},
 };
+
+function timeEST(date) {
+	date = date || new Date();
+	// return new Date(date);
+	return new Date(date).toLocaleString("en-US", {
+		timeZone: "America/New_York",
+	});
+}
