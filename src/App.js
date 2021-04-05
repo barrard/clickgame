@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { CountDown, Board } from "./components";
+import {
+	Avatar,
+	CountDown,
+	Board,
+	CreateGameBtn,
+	JoinGameBtn,
+	Alert,
+} from "./components";
 import Confetti from "react-confetti";
 
 import "./App.css";
@@ -15,7 +22,7 @@ const ENDPOINT = window.location.origin;
 //buy it?  buy what?
 function App() {
 	const [mySocket, setMySocket] = useState(null);
-	const [userId, setUserId] = useState("");
+	const [user, setUser] = useState("");
 	const [gameList, setGameList] = useState({});
 	const [currentGame, setCurrentGame] = useState(null);
 	const [color, setColor] = useState(null);
@@ -44,9 +51,9 @@ function App() {
 	};
 	useEffect(() => {
 		if (mySocket) {
-			mySocket.on("setUserId", (data) => {
+			mySocket.on("setUser", (data) => {
 				console.log(data);
-				setUserId(data);
+				setUser(data);
 			});
 
 			mySocket.on("new game", (game) => {
@@ -83,10 +90,18 @@ function App() {
 		}
 	});
 	return (
-		<div style={{ position: "relative", overflow: "hidden" }}>
+		<div
+			style={{
+				position: "relative",
+				overflow: "hidden",
+				background: "black",
+				color: "white",
+				minHeight: "100vh",
+			}}
+		>
 			<div>
-				{userId && <h3>Hello {userId}</h3>}
-				{!userId && <h3>Connecting....</h3>}
+				{user && <h3>Hello {user.name}</h3>}
+				{!user && <h3>Connecting....</h3>}
 			</div>
 
 			{!currentGame && (
@@ -94,67 +109,89 @@ function App() {
 					<h3>
 						Game List - Total games {Object.keys(gameList).length}
 					</h3>
-					<button onClick={() => mySocket.emit("createGame", userId)}>
+					<CreateGameBtn
+						onClick={() => mySocket.emit("createGame", user)}
+					>
 						Create Game
-					</button>
-					{Object.keys(gameList).map((gameId, i) => {
-						let game = gameList[gameId];
-						let gameOver = game.state === 3;
-						let gameInProgress = game.state === 2;
-						let gameIsStarting = game.state === 1;
-						let canJoin = game.state === 0;
+					</CreateGameBtn>
+					{Object.keys(gameList)
+						.sort((a, b) => gameList[a].state - gameList[b].state)
+						.map((gameId, i) => {
+							let game = gameList[gameId];
+							let gameOver = game.state === 3;
+							let gameInProgress = game.state === 2;
+							let gameIsStarting = game.state === 1;
+							let canJoin = game.state === 0;
 
-						return (
-							<div key={gameId}>
-								<h4>{`Game #${i + 1} ${gameId}`}</h4>
-								<p>Players {gameList[gameId].players.length}</p>
-								{canJoin && (
-									<>
-										<p>Waiting for more players...</p>
-										<button
-											onClick={() =>
-												mySocket.emit(
-													"joinGame",
-													gameId
-												)
-											}
-										>
-											JOIN
-										</button>
-									</>
-								)}
-								{gameIsStarting && <p>Game Is Starting...</p>}
-								{gameInProgress && <p>Game In Progress...</p>}
-								{gameOver && (
-									<p>{`Game Is Over.  ${game.winner} won...`}</p>
-								)}
-							</div>
-						);
-					})}
+							return (
+								<div key={gameId}>
+									<h4>{`Game #${i + 1} ${gameId}`}</h4>
+
+									{canJoin && (
+										<>
+											<Alert background="lightblue">
+												{`Players Ready:
+												${Object.keys(gameList[gameId].players).length}`}
+											</Alert>
+											<Alert>
+												Waiting for more players...
+											</Alert>
+											<JoinGameBtn
+												onClick={() =>
+													mySocket.emit(
+														"joinGame",
+														gameId
+													)
+												}
+											>
+												JOIN
+											</JoinGameBtn>
+										</>
+									)}
+									{gameIsStarting && (
+										<Alert background="lightblue">
+											Game Is Starting...
+										</Alert>
+									)}
+									{gameInProgress && (
+										<Alert background="lightblue">
+											Game In Progress...
+										</Alert>
+									)}
+									{gameOver && (
+										<Alert background="tomato">
+											{`Game Is Over.  ${game.winner.name} won...`}
+										</Alert>
+									)}
+								</div>
+							);
+						})}
 				</div>
 			)}
 
 			{currentGame && (
 				<div>
 					{currentGame.state === 0 && (
-						<h3>Waiting for more players</h3>
+						<Alert>Waiting for more players</Alert>
 					)}
 					{currentGame.state === 1 && (
 						<>
-							<h3>Ready for game to start</h3>
+							<Alert background={"lawngreen"}>
+								Ready for game to start
+							</Alert>
 							<CountDown />
 						</>
 					)}
-					{currentGame.state === 2 && <h3>GO GO GO CLICK!!</h3>}
+					{currentGame.state === 2 && <Alert>GO GO GO CLICK!!</Alert>}
 					{currentGame.state === 3 && (
 						<>
-							{currentGame.winner === userId && (
+							{currentGame.winner.id === user.id && (
 								<>
 									<h1>YOU WON!!!</h1>
 									<Confetti />
 								</>
 							)}
-							{currentGame.winner !== userId && (
+							{currentGame.winner.id !== user.id && (
 								<>
 									<h1>YOU LOST!!!</h1>
 								</>
@@ -164,33 +201,41 @@ function App() {
 
 					<div>
 						<h4>Player list</h4>
-						<div>
-							{currentGame.players.map((playerId, i) => {
-								let color = currentGame.colors[i];
-								let score = currentGame.scores[i];
-								return (
-									<div key={color} style={{ color }}>
-										<p>
-											{playerId} : {score}
-										</p>
-									</div>
-								);
-							})}
+						<div style={{ width: "25%", display: "inline-flex" }}>
+							<div>
+								{Object.keys(currentGame.players).map(
+									(playerId, i) => {
+										let player =
+											currentGame.players[playerId];
+
+										return (
+											<Avatar
+												player={player}
+												key={player.color}
+											/>
+										);
+									}
+								)}
+							</div>
 						</div>
-					</div>
-					<div
-						style={{
-							display: "flex",
-							justifyContent: "center",
-							overflow: "hidden",
-							position: "relative",
-						}}
-					>
-						<Board
-							userColor={color}
-							selectBox={selectBox}
-							game={currentGame}
-						/>
+						<div
+							style={{
+								display: "inline-flex",
+
+								justifyContent: "center",
+								// overflow: "hidden",
+								position: "relative",
+								width: "50%",
+								minWidth: "500px",
+								maxWidth: "500px",
+							}}
+						>
+							<Board
+								userColor={color}
+								selectBox={selectBox}
+								game={currentGame}
+							/>
+						</div>
 					</div>
 				</div>
 			)}

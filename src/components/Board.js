@@ -71,8 +71,8 @@ const StyledBox = styled.div`
 	overflow: hidden;
 	width: 50px;
 	height: 50px;
-	background-color: ${({ color }) => (color ? color : "white")};
-	border: 1px solid black;
+	background-color: ${({ color }) => (color ? color : "black")};
+	border: 1px solid white;
 	vertical-align: bottom;
 	box-sizing: border-box;
 	display: inline-flex;
@@ -89,4 +89,6 @@ const StyledBox = styled.div`
 
 const BoardContainer = styled.div`
 	max-width: 500px;
+	min-width: 500px;
+	margin-bottom: 15em;
 `;

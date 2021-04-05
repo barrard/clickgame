@@ -38,7 +38,7 @@ export const CountDown = () => {
 	return (
 		<CountDownContainer>
 			<AnimatedNumber opacity={opacity} size={size}>
-				{time}
+				{time + 1}
 			</AnimatedNumber>
 		</CountDownContainer>
 	);
